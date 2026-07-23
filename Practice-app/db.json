@@ -1,0 +1,40 @@
+{
+  "notes": [
+    {
+      "id": "1",
+      "content": "HTML is easy",
+      "important": false
+    },
+    {
+      "id": "2",
+      "content": "Browser can execute only JavaScript",
+      "important": false
+    },
+    {
+      "id": "3",
+      "content": "GET and POST are the most important methods of HTTP protocol",
+      "important": false
+    },
+    {
+      "content": "REST APIs have URL for each resource object",
+      "important": false,
+      "id": "UiXgG8tue1Y"
+    },
+    {
+      "content": "This note is saved to the server",
+      "important": false,
+      "id": "5mICwt7o8LQ"
+    },
+    {
+      "content": "This note is posted after separating server communication to new file",
+      "important": false,
+      "id": "KQdiPNpO8BM"
+    },
+    {
+      "content": "New note",
+      "important": false,
+      "id": "Xcytjrv8rvc"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
