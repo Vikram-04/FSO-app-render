@@ -80,7 +80,7 @@ app.put("/api/notes/:id", (request, response) => {
     return;
   }
   const body = request.body;
-  if (!body.content || !body.important) {
+  if (!body.content || body.important === undefined) {
     response
       .status(400)
       .json({ error: `Updated note must contain content and important field` });
