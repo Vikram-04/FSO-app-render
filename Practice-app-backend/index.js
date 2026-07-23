@@ -21,6 +21,8 @@ let notes = [
   },
 ];
 
+app.use(express.static("dist"));
+
 app.use(express.json());
 morgan.token("body", (req, res) => res.body);
 app.use(morgan("dev"));
