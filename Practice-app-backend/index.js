@@ -1,25 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
-const cors = require("cors");
+const Note = require("./models/note");
 
 const app = express();
-let notes = [
-  {
-    id: "1",
-    content: "HTML is easy",
-    important: true,
-  },
-  {
-    id: "2",
-    content: "Browser can execute only JavaScript",
-    important: false,
-  },
-  {
-    id: "3",
-    content: "GET and POST are the most important methods of HTTP protocol",
-    important: true,
-  },
-];
 
 app.use(express.static("dist"));
 
@@ -27,25 +11,25 @@ app.use(express.json());
 morgan.token("body", (req, res) => res.body);
 app.use(morgan("dev"));
 
-app.use(cors());
-
 app.get("/", (request, response) => {
   response.send("<h1>Hello world</h1>");
 });
 
 app.get("/api/notes", (request, response) => {
-  response.json(notes);
+  Note.find({}).then((notes) => {
+    response.json(notes);
+  });
 });
 
 app.get("/api/notes/:id", (request, response) => {
-  const id = request.params.id;
-  const note = notes.find((n) => n.id === id);
-  if (note) {
+  Note.findById(request.params.id).then((note) => {
+    if (!note) {
+      return response
+        .status(404)
+        .json({ error: `note with id ${request.params.id} does not exist` });
+    }
     response.json(note);
-  } else {
-    response.statusMessage = `A note with id ${id} does not exist`;
-    response.status(404).end();
-  }
+  });
 });
 
 app.delete("/api/notes/:id", (request, response) => {
@@ -60,27 +44,17 @@ app.post("/api/notes", (request, response) => {
     response.status(400).json({ error: "note must contain content field" });
     return;
   }
-  const maxId =
-    notes.length > 0 ? Math.max(...notes.map((n) => Number(n.id))) : 0;
-
-  const note = {
+  const note = new Note({
     content: body.content,
     important: body.important || false,
-    id: (maxId + 1).toString(),
-  };
-
-  notes = notes.concat(note);
-  console.log(note);
-  response.json(note);
+  });
+  note.save().then((savedNote) => {
+    response.json(savedNote);
+  });
 });
 
 app.put("/api/notes/:id", (request, response) => {
   const id = request.params.id;
-  let note = notes.find((n) => n.id === id);
-  if (!note) {
-    response.status(400).json({ error: `Note with id ${id} does not exist` });
-    return;
-  }
   const body = request.body;
   if (!body.content || body.important === undefined) {
     response
@@ -97,7 +71,7 @@ app.put("/api/notes/:id", (request, response) => {
   response.json(note);
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
