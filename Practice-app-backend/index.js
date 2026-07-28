@@ -42,19 +42,18 @@ app.delete("/api/notes/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/notes", (request, response) => {
+app.post("/api/notes", (request, response, next) => {
   const body = request.body;
-  if (!body.content) {
-    response.status(400).json({ error: "note must contain content field" });
-    return;
-  }
   const note = new Note({
     content: body.content,
     important: body.important || false,
   });
-  note.save().then((savedNote) => {
-    response.json(savedNote);
-  });
+  note
+    .save()
+    .then((savedNote) => {
+      response.json(savedNote);
+    })
+    .catch((error) => next(error));
 });
 
 app.put("/api/notes/:id", (request, response, next) => {
@@ -83,6 +82,8 @@ const errorHandler = (error, req, res, next) => {
   console.log(error);
   if (error.name === "CastError") {
     return res.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return res.status(400).json({ error: error.message });
   }
   next(error);
 };
