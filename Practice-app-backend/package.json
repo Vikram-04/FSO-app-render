@@ -11,7 +11,8 @@
     "start": "node index.js",
     "dev": "node --watch index.js",
     "build:ui": "rm -rf dist && cd ../Practice-app && npm run build && cp -r dist ../Practice-app-backend",
-    "deploy-full": "npm run build:ui && git add . && git commit -m $npm_config_message && git push"
+    "deploy-full": "npm run build:ui && git add . && git commit -m \"$npm_config_message\" && git push",
+    "lint": "eslint ."
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -19,5 +20,10 @@
     "express": "^5.2.1",
     "mongoose": "^9.8.0",
     "morgan": "^1.11.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
+    "globals": "^17.8.0"
   }
 }
