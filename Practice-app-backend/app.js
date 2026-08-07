@@ -1,30 +1,32 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const config = require("./utils/config");
-const morgan = require("morgan");
+const logger = require("./utils/logger");
 const middleware = require("./utils/middleware");
 const notesRouter = require("./controllers/notes");
-
+const usersRouter = require("./controllers/users");
+const dns = require("dns");
 const app = express();
 
-const dns = require("dns");
-dns.setServers(["1.1.1.1", "0.0.0.0"]);
+logger.info("connecting to", config.MONGODB_URI);
+
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 mongoose
   .connect(config.MONGODB_URI)
   .then(() => {
-    console.log("connected to MongoDB");
+    logger.info("connected to MongoDB");
   })
   .catch((error) => {
-    console.log("error connecting to MongoDB:", error.message);
+    logger.error("error connection to MongoDB:", error.message);
   });
 
 app.use(express.static("dist"));
 app.use(express.json());
-morgan.token("body", (req, res) => res.body);
-app.use(morgan("dev"));
+app.use(middleware.requestLogger);
 
 app.use("/api/notes", notesRouter);
+app.use("/api/users", usersRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
